@@ -11,7 +11,7 @@ class User(db.Model):
     password=db.Column(db.String(100),nullable=False)
     phone=db.Column(db.String(20),nullable=False)
     role=db.Column(db.String(30),nullable=False,default='user')                #admin/staff/user
-    status=db.Column(db.String(20),nullable=False,default='active')   #active/blacklisted
+    status=db.Column(db.String(20),nullable=False,default='active')    #active/blacklisted
     created_at=db.Column(db.DateTime,default=datetime.utcnow)
     bookings=db.relationship('Booking',backref='user',lazy=True)
 
@@ -22,7 +22,7 @@ class StaffProfile(db.Model):
     user_id=db.Column(db.Integer, db.ForeignKey('users.id'),nullable=False)
     bio=db.Column(db.Text,default='')
     experience_years=db.Column(db.Integer,default=0)
-    approval_status=db.Column(db.String(20),default='pending')                #pending/approved/rejected
+    approval_status=db.Column(db.String(20),default='pending')              #pending/approved/rejected
     user=db.relationship('User',backref=db.backref('staff_profile',uselist=False))
 
 
@@ -31,7 +31,7 @@ class Trek(db.Model):
     id=db.Column(db.Integer,primary_key=True)
     name=db.Column(db.String(100),nullable=False)
     location=db.Column(db.String(150),nullable=False)
-    difficulty=db.Column(db.String(20),nullable=False)        #easy/moderate/hard
+    difficulty=db.Column(db.String(20),nullable=False)         #easy/moderate/hard
     duration_days=db.Column(db.Integer,nullable=False)
     total_slots=db.Column(db.Integer,nullable=False)
     available_slots=db.Column(db.Integer,nullable=False)
