@@ -1,6 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
+
 db=SQLAlchemy()
 
 class User(db.Model):
@@ -14,12 +15,13 @@ class User(db.Model):
     status=db.Column(db.String(20),nullable=False,default='active')    #active/blacklisted
     created_at=db.Column(db.DateTime,default=datetime.utcnow)
     bookings=db.relationship('Booking',backref='user',lazy=True)
-
+   
+    
 
 class StaffProfile(db.Model):
     __tablename__='staff_profiles'
     id=db.Column(db.Integer,primary_key=True)
-    user_id=db.Column(db.Integer, db.ForeignKey('users.id'),nullable=False)
+    user_id=db.Column(db.Integer, db.ForeignKey('users.id'),nullable=False,unique=True)
     bio=db.Column(db.Text,default='')
     experience_years=db.Column(db.Integer,default=0)
     approval_status=db.Column(db.String(20),default='pending')              #pending/approved/rejected
@@ -49,6 +51,8 @@ class Trek(db.Model):
 
 class Booking(db.Model):
     __tablename__ ='bookings'
+    __table_args__ = (
+        db.UniqueConstraint('user_id', 'trek_id', name='uq_user_trek'),)  #prevent duplicate bookings    
 
     id= db.Column(db.Integer,primary_key=True)
     user_id=db.Column(db.Integer,db.ForeignKey('users.id'),nullable=False)
@@ -57,6 +61,7 @@ class Booking(db.Model):
     status=db.Column(db.String(20),default='Booked')                #Booked/Cancelled/Completed
     participants=db.Column(db.Integer,default=1)
     total_amount=db.Column(db.Float,default=0.0)
+    payment_status = db.Column(db.String(20), default='Pending')   #Pending /paid/Refunded
 
 
 
