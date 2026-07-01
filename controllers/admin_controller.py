@@ -1,9 +1,9 @@
-from flask import render_template,request,redirect,url_for,flash
+from flask import app, Flask, render_template,request,redirect,url_for,flash
 from models.models import db,User,Trek,Booking,StaffProfile
 from utils.decorators import login_required,role_required
 
 def register_admin_routes(app):
-    # =======================================Dashboard ===========================================
+    #=======================================Dashboard ===========================================
     @app.route('/admin/dashboard')
     @login_required
     @role_required('admin')
@@ -19,7 +19,7 @@ def register_admin_routes(app):
                                total_bookings=total_bookings
                                )
     
-    # ==================================View All Treks===============================================
+    #==================================View All Treks===============================================
     @app.route('/admin/treks')
     @login_required
     @role_required('admin')
@@ -29,7 +29,7 @@ def register_admin_routes(app):
                                treks=treks
                                )
     
-    # =======================================Add Trek=====================================================
+    #=======================================Add Trek=====================================================
     @app.route('/admin/trek/add',methods=['GET','POST'])
     @login_required
     @role_required('admin')
@@ -54,7 +54,7 @@ def register_admin_routes(app):
         return render_template('admin/add_trek.html')
 
 
-    # ==========================================Edit Trek===================================================
+    #==========================================Edit Trek===================================================
     @app.route('/admin/trek/edit/<int:trek_id>',methods=['GET', 'POST'])
     @login_required
     @role_required('admin')
@@ -78,7 +78,7 @@ def register_admin_routes(app):
                                trek=trek
                                )
     
-    # ==========================================Delete Trek===================================================
+    #==========================================Delete Trek===================================================
     @app.route('/admin/trek/delete/<int:trek_id>')
     @login_required
     @role_required('admin')
@@ -109,6 +109,60 @@ def register_admin_routes(app):
                                staffs=staffs
                                )
     
+
+    #========================================Add Staff===================================================
+    @app.route('/admin/staff/add',methods=['GET','POST'])
+    @login_required
+    @role_required('admin')
+    def add_staff():
+        if request.method == 'POST':
+            user = User(
+                name=request.form['name'],
+                email=request.form['email'],
+                password=request.form['password'],
+                phone=request.form['phone'],
+                role='staff'
+            )
+            db.session.add(user)
+            db.session.commit()
+            profile = StaffProfile(user_id=user.id,
+                                   bio=request.form['bio'],
+                                   experience_years=request.form['experience_years'],
+                                   approval_status='approved'
+                                   )
+            db.session.add(profile)
+            db.session.commit()
+            flash('Staff added successfully')
+            return redirect(url_for('view_staff'))
+        return render_template('admin/add_staff.html')
+    
+    #========================================Delete Staff===================================================
+    @app.route('/admin/staff/delete/<int:staff_id>')
+    @login_required
+    @role_required('admin')
+    def delete_staff(staff_id):
+        staff = User.query.get_or_404(staff_id)
+        if staff.role!='staff':
+            flash('Invalid staff member')
+            return redirect(url_for('view_staff'))
+        profile = StaffProfile.query.filter_by(user_id=staff.id).first()
+        if profile:
+            db.session.delete(profile)
+        db.session.delete(staff)
+        db.session.commit()
+        flash('Staff removed successfully')
+        return redirect(url_for('view_staff'))
+    
+    #========================================Trekking History===================================================
+    @app.route('/admin/history')
+    @login_required
+    @role_required('admin')
+    def trekking_history():
+        history = Booking.query.filter_by(status='Completed').all()
+        return render_template('admin/history.html',
+                               history=history
+                               )
+    
     #========================================Assign Staff for Trek===================================================
     @app.route('/admin/trek/assign_staff/<int:trek_id>',methods=['GET','POST'])
     @login_required
@@ -126,7 +180,7 @@ def register_admin_routes(app):
                                staffs=staffs
                                )
     
-    #========================================Blacklist User===================================================
+    #========================================Blacklist User=================================================================
     @app.route('/admin/blacklist/<int:user_id>')
     @login_required
     @role_required('admin')
@@ -137,7 +191,7 @@ def register_admin_routes(app):
         flash('User blacklisted')
         return redirect(request.referrer)
     
-    #========================================Activate User===================================================
+    #========================================Activate User================================================================
     @app.route('/admin/activate/<int:user_id>')
     @login_required
     @role_required('admin')
@@ -148,7 +202,7 @@ def register_admin_routes(app):
         flash('User activated')
         return redirect(request.referrer)
     
-    #=======================================View All Bookings===================================================
+    #=======================================View All Bookings====================================================================
     @app.route('/admin/bookings')
     @login_required
     @role_required('admin')
@@ -163,16 +217,22 @@ def register_admin_routes(app):
     @login_required
     @role_required('admin')
     def search():
-        keyword = request.args.get('keyword', '')
-        treks = Trek.query.filter(
-            Trek.name.ilike(f'%{keyword}%')).all()
-        
-        users = User.query.filter(
-            User.name.ilike(f'%{keyword}%')).all()
+        keyword = request.args.get('keyword','')
+        treks = Trek.query.filter(db.or_(
+            Trek.name.ilike(f'%{keyword}%'),
+            Trek.id.cast(db.String).ilike(f'%{keyword}%'))
+            ).all()
+        users = User.query.filter(db.or_(
+            User.name.ilike(f'%{keyword}%'),
+            User.id.cast(db.String).ilike(f'%{keyword}%'))
+            ).all()
+        staffs = User.query.filter(User.role == 'staff',db.or_(
+            User.name.ilike(f'%{keyword}%'),
+            User.id.cast(db.String).ilike(f'%{keyword}%'))
+            ).all()
         return render_template('admin/search_results.html',
-                               treks=treks,
-                               users=users,
-                               keyword=keyword
-                               )
-
-
+                            treks=treks,
+                            users=users,
+                            staffs=staffs,
+                            keyword=keyword
+                            )

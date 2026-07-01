@@ -1,46 +1,28 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Trekking Management{% endblock %}</title>
-
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>Trekking Management Application</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-
 <body>
 
-    <nav class="navbar">
-        <div class="logo">
-            Trekking Management
-        </div>
-
-        <div class="nav-links">
-            <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
-            <a href="{{ url_for('view_treks') }}">Treks</a>
-            <a href="{{ url_for('view_users') }}">Users</a>
-            <a href="{{ url_for('view_staff') }}">Staff</a>
-            <a href="{{ url_for('view_bookings') }}"> Bookings</a>
-        </div>
-
-    </nav>
-
-    <div class="container">
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="flash-message">
-                        {{ message }}
-                    </div>
-
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-
-        {% block content %}
-        {% endblock %}
-
+    <div class="auth-header">
+        <h2>Trekking Management Application</h2>
     </div>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="flash-message">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    {% block content %}
+    {% endblock %}
 
 </body>
 </html>

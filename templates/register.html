@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="auth-page">
+
+    <div class="auth-card">
+
+        <h2>Register</h2>
+
+        <form method="POST">
+
+            <input type="text"
+                   name="name"
+                   placeholder="Full Name"
+                   required>
+            <input type="text"
+                    name="phone"
+                    placeholder="Phone Number"
+                    required>       
+
+            <input type="email"
+                   name="email"
+                   placeholder="Email"
+                   required>
+
+            <input type="password"
+                   name="password"
+                   placeholder="Password"
+                   required>
+
+            <input type="password"
+                   name="confirm_password"
+                   placeholder="Confirm Password"
+                   required>
+
+            <div class="role-row">
+
+                <label>I am a</label>
+
+                <select name="role" required>
+                    <option value="">-- Select Role --</option>
+                    <option value="user">User (Trekker)</option>
+                </select>
+
+            </div>
+
+            <button type="submit">
+                Register
+            </button>
+
+        </form>
+
+        <p>
+            Already have an account?
+            <a href="{{ url_for('login') }}">
+                Login here
+            </a>
+        </p>
+
+    </div>
+
+</div>
+
+{% endblock %}
