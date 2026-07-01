@@ -1,4 +1,4 @@
-from flask import Flask 
+from flask import Flask,render_template,request,url_for,redirect
 from models.models import db,User,Trek,Booking,StaffProfile
 from controllers.auth_controller import register_routes
 from controllers.admin_controller import register_admin_routes
@@ -31,7 +31,7 @@ with app.app_context():
 
 @app.route('/')
 def home():
-    return "Welcome to Trekking Management System"
+    return render_template('admin/dashboard.html')
 
 if __name__=='__main__':
     app.run(debug=True)
