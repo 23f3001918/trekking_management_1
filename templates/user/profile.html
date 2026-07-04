@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="dashboard-container">
+    <div class="sidebar">
+        <a href="{{ url_for('user_dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('view_treks') }}">Browse Treks</a>
+        <a href="{{ url_for('user_bookings') }}">My Bookings</a>
+        <a href="{{ url_for('trek_history') }}">History</a>
+        <a href="{{ url_for('user_profile') }}" class="active">Profile</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+
+    <div class="content">
+        <div class="topbar">
+            <h3>Trekking Management Application</h3>
+            <div>
+                {{ session['user_name'] }}
+            </div>
+        </div>
+        <h2>My Profile</h2>
+
+        <div class="profile-card">
+            <form method="POST"action="{{ url_for('update_profile') }}">
+                <label>Full Name</label>
+                <input type="text"name="name"value="{{ user.name }}"required>
+                <label>Email</label>
+                <input type="email" value="{{ user.email }}" readonly>
+                <label>Phone Number</label>
+                <input type="text" name="phone" value="{{ user.phone }}"required>
+                <label>Role</label>
+                <input type="text" value="{{ user.role }}"readonly>
+                <button type="submit"> Update Profile
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,1 +1,77 @@
-<h1>User Dashboard</h1>
+{% extends 'base.html' %}
+{% block content %}
+<div class="dashboard-container">
+    <div class="sidebar">
+        <a href="{{ url_for('user_dashboard') }}" class="active">Dashboard</a>
+        <a href="{{ url_for('view_treks') }}">Browse Treks</a>
+        <a href="{{ url_for('user_bookings') }}">My Bookings</a>
+        <a href="{{ url_for('trek_history') }}">History</a>
+        <a href="{{ url_for('user_profile') }}">Profile</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+
+    </div>
+
+    <div class="content">
+        <div class="topbar">
+            <h3>Trekking Management Application</h3>
+            <div>
+                {{ session['user_name'] }}
+            </div>
+        </div>
+        <h2>Welcome, {{ session['user_name'] }}!</h2>
+
+        <h3>Available Treks</h3>
+        <table>
+            <tr>
+                <th>Trek Name</th>
+                <th>Location</th>
+                <th>Difficulty</th>
+                <th>Duration</th>
+                <th>Available Slots</th>
+                <th>Action</th>
+            </tr>
+
+            {% for trek in open_treks %}
+            <tr>
+                <td>{{ trek.name }}</td>
+                <td>{{ trek.location }}</td>
+                <td>{{ trek.difficulty }}</td>
+                <td>{{ trek.duration_days }} Days</td>
+                <td>{{ trek.available_slots }}</td>
+                <td>
+
+                    <a class="btn" href="{{ url_for('book_trek',trek_id=trek.id) }}">Book Now</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        <br>
+
+        <h3>My Bookings</h3>
+        <table>
+            <tr>
+                <th>Trek Name</th>
+                <th>Booking Date</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+
+            {% for booking in bookings %}
+            <tr>
+                <td>{{ booking.trek.name }}</td>
+                <td>
+                    {{ booking.booking_date.strftime('%d %b %Y') }}
+                </td>
+                <td>{{ booking.status }}</td>
+
+                <td>
+                    <a class="btn" href="{{ url_for('user_bookings') }}">View Details</a>
+                </td>
+            </tr>
+
+            {% endfor %}
+
+        </table>
+    </div>
+</div>
+{% endblock %}

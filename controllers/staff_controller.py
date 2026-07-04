@@ -75,16 +75,19 @@ def register_staff_routes(app):
                                )
     
     #====================================== Update Trek Status =======================================
-    @app.route('/staff/trek/<int:trek_id>/status',methods=['GET','POST'])
+    @app.route('/staff/trek/<int:trek_id>/status', methods=['GET', 'POST'])
     @login_required
     @role_required('staff')
     def update_trek_status(trek_id):
-        trek = Trek.query.get_or_404(trek_id)
+        trek=Trek.query.get_or_404(trek_id)
         if trek.assigned_staff_id != session['user_id']:
             flash('Unauthorized Access')
             return redirect(url_for('assigned_treks'))
         if request.method == 'POST':
             trek.status = request.form['status']
+            if trek.status == 'Completed':
+                for booking in trek.bookings:
+                    booking.status = 'Completed'
             db.session.commit()
             flash('Trek status updated successfully')
             return redirect(url_for('trek_details',
@@ -92,7 +95,7 @@ def register_staff_routes(app):
                                     )
         return render_template('staff/update_status.html',
                                trek=trek
-                               )  
+                               )
     
     #====================================== View Participants ==============================================
     @app.route('/staff/trek/<int:trek_id>/participants')

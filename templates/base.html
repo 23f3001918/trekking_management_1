@@ -6,11 +6,6 @@
           href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-
-    <div class="auth-header">
-        <h2>Trekking Management Application</h2>
-    </div>
-
     {% with messages = get_flashed_messages() %}
         {% if messages %}
             {% for message in messages %}
