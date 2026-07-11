@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="dashboard-container">
+
+    <aside class="sidebar">
+        <h2 class="logo">🏔 Trek Staff</h2>
+        <ul>
+            <li>
+                <a href="{{ url_for('staff_dashboard') }}">Dashboard</a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('assigned_treks') }}">My Treks</a>
+            </li>
+
+            <li class="active">
+                <a href="{{ url_for('staff_profile') }}">Profile</a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            </li>
+        </ul>
+    </aside>
+
+    <div class="main-content">
+        <header class="topbar">
+            <h2>Trekking Management Application</h2>
+            <div class="admin-info">
+                 Staff
+            </div>
+        </header>
+
+        <div class="content">
+            <div class="form-card">
+                <h2>My Profile</h2>
+                <form method="POST">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Approval Status</label>
+                            <input
+                                type="text"
+                                value="{{ profile.approval_status }}"
+                                readonly>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Experience (Years)</label>
+                            <input
+                                type="number"
+                                name="experience_years"
+                                value="{{ profile.experience_years }}"
+                                min="0"
+                                required>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label>Bio</label>
+                            <textarea
+                                name="bio"
+                                rows="6"
+                                required>{{ profile.bio }}</textarea>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button
+                            type="submit"
+                            class="save-btn">
+                            Update Profile
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

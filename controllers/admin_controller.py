@@ -12,11 +12,13 @@ def register_admin_routes(app):
         total_users=User.query.filter_by(role='user').count()
         total_staff=User.query.filter_by(role='staff').count()
         total_bookings=Booking.query.count()
+        recent_bookings=Booking.query.order_by(Booking.booking_date.desc()).limit(5).all()
         return render_template('admin/dashboard.html',
                                total_treks=total_treks,
                                total_users=total_users,
                                total_staff=total_staff,
-                               total_bookings=total_bookings
+                               total_bookings=total_bookings,
+                               recent_bookings=recent_bookings
                                )
     
     #==================================View All Treks===============================================
@@ -104,37 +106,20 @@ def register_admin_routes(app):
     @login_required
     @role_required('admin')
     def view_staff():
-        staffs=User.query.filter_by(role='staff').all()
-        return render_template('admin/staffs.html',
-                               staffs=staffs
-                               )
-    
+        approved_staff = User.query.join(StaffProfile).filter(
+            User.role == 'staff',
+            StaffProfile.approval_status == 'approved'
+        ).all()
 
-    #========================================Add Staff===================================================
-    @app.route('/admin/staff/add',methods=['GET','POST'])
-    @login_required
-    @role_required('admin')
-    def add_staff():
-        if request.method == 'POST':
-            user = User(
-                name=request.form['name'],
-                email=request.form['email'],
-                password=request.form['password'],
-                phone=request.form['phone'],
-                role='staff'
-            )
-            db.session.add(user)
-            db.session.commit()
-            profile = StaffProfile(user_id=user.id,
-                                   bio=request.form['bio'],
-                                   experience_years=request.form['experience_years'],
-                                   approval_status='approved'
-                                   )
-            db.session.add(profile)
-            db.session.commit()
-            flash('Staff added successfully')
-            return redirect(url_for('view_staff'))
-        return render_template('admin/add_staff.html')
+        pending_staff = User.query.join(StaffProfile).filter(
+            User.role == 'staff',
+            StaffProfile.approval_status == 'pending'
+        ).all()
+
+        return render_template('admin/staffs.html',
+                               approved_staff=approved_staff,
+                               pending_staff=pending_staff
+                               )
     
     #========================================Delete Staff===================================================
     @app.route('/admin/staff/delete/<int:staff_id>')
@@ -153,6 +138,21 @@ def register_admin_routes(app):
         flash('Staff removed successfully')
         return redirect(url_for('view_staff'))
     
+    #======================================== Approve Staff ===========================================
+
+    @app.route('/admin/staff/approve/<int:staff_id>')
+    @login_required
+    @role_required('admin')
+    def approve_staff(staff_id):
+        profile = StaffProfile.query.filter_by(
+            user_id=staff_id
+        ).first_or_404()
+        profile.approval_status ='approved'
+        profile.user.status ='active'
+        db.session.commit()
+        flash('Staff approved successfully.')
+        return redirect(url_for('view_staff'))
+        
     #========================================Trekking History===================================================
     @app.route('/admin/history')
     @login_required
@@ -212,7 +212,7 @@ def register_admin_routes(app):
                                bookings=bookings
                                )
     
-    #=======================================Search=========================================================
+    #=======================================Search============================================================================
     @app.route('/admin/search')
     @login_required
     @role_required('admin')

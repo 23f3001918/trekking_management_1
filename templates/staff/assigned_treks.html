@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <h2 class="logo"> Trek Staff</h2>
+        <ul>
+            <li>
+                <a href="{{ url_for('staff_dashboard') }}">Dashboard</a>
+            </li>
+
+            <li class="active">
+                <a href="{{ url_for('assigned_treks') }}">My Treks</a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('staff_profile') }}">Profile</a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            </li>
+        </ul>
+    </aside>
+
+    <div class="main-content">
+        <header class="topbar">
+            <h2>Trekking Management Application</h2>
+            <div class="admin-info">
+                 Staff
+            </div>
+        </header>
+
+        <div class="content">
+            <div class="table-box">
+                <div class="table-header">
+                    <h2>My Assigned Treks</h2>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Trek Name</th>
+                            <th>Location</th>
+                            <th>Difficulty</th>
+                            <th>Duration</th>
+                            <th>Available Slots</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                    {% if treks %}
+                        {% for trek in treks %}
+                        <tr>
+                            <td>{{ trek.id }}</td>
+                            <td>{{ trek.name }}</td>
+                            <td>{{ trek.location }}</td>
+                            <td>{{ trek.difficulty }}</td>
+                            <td>{{ trek.duration_days }} Days</td>
+                            <td>
+                                {{ trek.available_slots }}/{{ trek.total_slots }}
+                            </td>
+
+                            <td>
+                                {% if trek.status == "Open" %}
+                                    <span class="status-open">
+                                        Open
+                                    </span>
+
+                                {% elif trek.status == "Closed" %}
+                                    <span class="status-closed">
+                                        Closed
+                                    </span>
+
+                                {% elif trek.status == "Completed" %}
+                                    <span class="status-completed">
+                                        Completed
+                                    </span>
+
+                                {% else %}
+                                    <span class="status-pending">
+                                        {{ trek.status }}
+                                    </span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                <a href="{{ url_for('trek_details', trek_id=trek.id) }}"
+                                   class="edit-btn">
+                                    Manage
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+
+                    {% else %}
+                        <tr>
+                            <td colspan="8" style="text-align:center;padding:20px;">
+                                No treks assigned.
+                            </td>
+                        </tr>
+                    {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

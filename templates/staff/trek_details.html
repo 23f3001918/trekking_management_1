@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <h2 class="logo">🏔 Trek Staff</h2>
+        <ul>
+            <li>
+                <a href="{{ url_for('staff_dashboard') }}">Dashboard</a>
+            </li>
+
+            <li class="active">
+                <a href="{{ url_for('assigned_treks') }}">My Treks</a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('staff_profile') }}">Profile</a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            </li>
+        </ul>
+    </aside>
+
+    <div class="main-content">
+        <header class="topbar">
+            <h2>Trekking Management Application</h2>
+            <div class="admin-info">
+                 Staff
+            </div>
+        </header>
+
+        <div class="content">
+            <div class="form-card">
+                <h2>{{ trek.name }}</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Location</label>
+                        <input type="text" value="{{ trek.location }}" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Difficulty</label>
+                        <input type="text" value="{{ trek.difficulty }}" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Duration (Days)</label>
+                        <input type="text" value="{{ trek.duration_days }}" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Total Slots</label>
+                        <input type="text" value="{{ trek.total_slots }}" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Available Slots</label>
+                        <input type="text" value="{{ trek.available_slots }}" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Status</label>
+                        <input type="text" value="{{ trek.status }}" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Start Date</label>
+                        <input type="text" value="{{ trek.start_date }}" readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label>End Date</label>
+                        <input type="text" value="{{ trek.end_date }}" readonly>
+                    </div>
+                </div>
+            </div>
+            <br>
+
+            <div class="table-box">
+                <div class="table-header">
+                    <h2>Participants</h2>
+                    <span>{{ participant_count }} Registered</span>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>Total Registered Participants</th>
+                        <th>Action</th>
+                    </tr>
+
+                    <tr>
+                        <td>{{ participant_count }}</td>
+                        <td>
+                            <a href="{{ url_for('view_participants', trek_id=trek.id) }}"
+                               class="save-btn">
+                                View Participants
+                            </a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <br>
+
+            <div class="button-group">
+                <a href="{{ url_for('update_slots', trek_id=trek.id) }}"
+                   class="edit-btn">
+                    Update Slots
+                </a>
+
+                <a href="{{ url_for('update_trek_status', trek_id=trek.id) }}"
+                   class="save-btn">
+                    Update Status
+                </a>
+
+                <a href="{{ url_for('assigned_treks') }}"
+                   class="cancel-btn">
+                    Back
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

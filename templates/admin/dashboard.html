@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <h2 class="logo">Trek Admin</h2>
+        <ul>
+            <li class="active">
+                <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('view_treks') }}">Treks</a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('view_staff') }}">Staff</a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('view_users') }}">Users</a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('view_bookings') }}">Bookings</a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('search') }}">Search</a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('trekking_history') }}">Reports</a>
+            </li>
+
+            <li>
+                <a href="#">Settings</a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            </li>
+        </ul>
+    </aside>
+
+    <div class="main-content">
+        <header class="topbar">
+            <h2>Trekking Management Application</h2>
+            <div class="admin-info">
+                 Admin
+            </div>
+        </header>
+
+        <div class="content">
+            <h1>Dashboard</h1>
+            <div class="cards">
+                <div class="card">
+                    <div>
+                        <p>Total Treks</p>
+                        <h2>{{ total_treks }}</h2>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div>
+                        <p>Total Users</p>
+                        <h2>{{ total_users }}</h2>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div>
+                        <p>Total Staff</p>
+                        <h2>{{ total_staff }}</h2>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div>
+                        <p>Total Bookings</p>
+                        <h2>{{ total_bookings }}</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-box">
+                <div class="table-header">
+                    <h3>Recent Bookings</h3>
+                    <a href="{{ url_for('view_bookings') }}">
+                        View All Bookings →
+                    </a>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Booking ID</th>
+                            <th>User</th>
+                            <th>Trek</th>
+                            <th>Booking Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                    {% if recent_bookings %}
+                        {% for booking in recent_bookings %}
+                        <tr>
+                            <td>{{ booking.id }}</td>
+                            <td>{{ booking.user.name }}</td>
+                            <td>{{ booking.trek.name }}</td>
+                            <td>{{ booking.booking_date }}</td>
+                            <td>{{ booking.status }}</td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="5" style="text-align:center;">
+                                No bookings available
+                            </td>
+                        </tr>
+                    {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

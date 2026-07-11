@@ -1,15 +1,9 @@
 {% extends 'base.html' %}
-
 {% block content %}
-
 <div class="auth-page">
-
     <div class="auth-card">
-
         <h2>Login</h2>
-
         <form method="POST">
-
             <input type="email"
                    name="email"
                    placeholder="Email"
@@ -28,18 +22,17 @@
             <button type="submit">
                 Login
             </button>
-
         </form>
 
         <p>
             Don't have an account?
-            <a href="{{ url_for('register') }}">
-                Register here
-            </a>
         </p>
 
+        <div class="auth-links">
+            <a href="{{ url_for('register') }}">Register as Trekker</a>
+            |
+            <a href="{{ url_for('staff_register') }}">Register as Staff</a>
+        </div>
     </div>
-
 </div>
-
 {% endblock %}

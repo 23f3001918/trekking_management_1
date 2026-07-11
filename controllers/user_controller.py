@@ -49,16 +49,19 @@ def register_user_routes(app):
         if trek.available_slots <= 0:
             flash('No slots available')
             return redirect(url_for('view_treks'))
-        existing_booking = Booking.query.filter_by(user_id=user_id,
-                                                   trek_id=trek_id
-                                                   ).first()
+        existing_booking = Booking.query.filter(
+            Booking.user_id == user_id,
+            Booking.trek_id == trek_id,
+            Booking.status != 'Cancelled'
+            ).first()
+        
         if existing_booking:
             flash('You have already booked this trek')
             return redirect(url_for('view_treks'))
         booking=Booking(user_id=user_id,
                           trek_id=trek_id,
                           total_amount=trek.price,
-                          payment_status='Pending'
+                          payment_status='pending'
                           )
         trek.available_slots-=1
         db.session.add(booking)
@@ -76,6 +79,25 @@ def register_user_routes(app):
         return render_template('user/bookings.html',
                                bookings=bookings
                                )
+    
+    #============================Cancel Booking============================================================
+
+    @app.route('/user/booking/cancel/<int:booking_id>')
+    @login_required
+    @role_required('user')
+    def cancel_booking(booking_id):
+        booking = Booking.query.get_or_404(booking_id)
+        if booking.user_id != session['user_id']:
+            flash('Unauthorized access')
+            return redirect(url_for('user_bookings'))
+        if booking.status != 'Booked':
+            flash('Only booked treks can be cancelled')
+            return redirect(url_for('user_bookings'))
+        booking.status = 'Cancelled'
+        booking.trek.available_slots += 1
+        db.session.commit()
+        flash('Booking cancelled successfully')
+        return redirect(url_for('user_bookings'))
     
     
     #=========================== Trek History =======================================

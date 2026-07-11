@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <h2 class="logo">🏔 Trek Staff</h2>
+        <ul>
+            <li>
+                <a href="{{ url_for('staff_dashboard') }}">Dashboard</a>
+            </li>
+
+            <li class="active">
+                <a href="{{ url_for('assigned_treks') }}">My Treks</a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('staff_profile') }}">Profile</a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            </li>
+        </ul>
+    </aside>
+
+    <div class="main-content">
+        <header class="topbar">
+            <h2>Trekking Management Application</h2>
+            <div class="admin-info">
+                 Staff
+            </div>
+        </header>
+        <div class="content">
+            <div class="form-card">
+                <h2>Update Trek Status</h2>
+                <form method="POST">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Trek Name</label>
+                            <input
+                                type="text"
+                                value="{{ trek.name }}"
+                                readonly>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Location</label>
+                            <input
+                                type="text"
+                                value="{{ trek.location }}"
+                                readonly>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Current Status</label>
+                            <input
+                                type="text"
+                                value="{{ trek.status }}"
+                                readonly>
+                        </div>
+
+                        <div class="form-group">
+                            <label>New Status</label>
+                            <select name="status" required>
+                                <option value="Open"
+                                {% if trek.status=="Open" %}selected{% endif %}>
+                                    Open
+                                </option>
+
+                                <option value="Ongoing"
+                                {% if trek.status=="Ongoing" %}selected{% endif %}>
+                                    Ongoing
+                                </option>
+
+                                <option value="Closed"
+                                {% if trek.status=="Closed" %}selected{% endif %}>
+                                    Closed
+                                </option>
+
+                                <option value="Completed"
+                                {% if trek.status=="Completed" %}selected{% endif %}>
+                                    Completed
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="button-group">
+                        <a href="{{ url_for('trek_details', trek_id=trek.id) }}"
+                           class="cancel-btn">
+                            Cancel
+                        </a>
+
+                        <button
+                            type="submit"
+                            class="save-btn">
+                            Update Status
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

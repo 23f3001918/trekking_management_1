@@ -38,7 +38,7 @@ class Trek(db.Model):
     total_slots=db.Column(db.Integer,nullable=False)
     available_slots=db.Column(db.Integer,nullable=False)
     assigned_staff_id=db.Column(db.Integer,db.ForeignKey('users.id'), nullable=True)
-    status=db.Column(db.String(20),default='Pending')              #Pending/Approved/Open/Closed/Completed
+    status=db.Column(db.String(20),default='pending')              #pending/approved/Open/Closed/Completed
     start_date=db.Column(db.Date,nullable=False)
     end_date=db.Column(db.Date,nullable=False)
     description=db.Column(db.Text,default='')
@@ -61,7 +61,7 @@ class Booking(db.Model):
     status=db.Column(db.String(20),default='Booked')                #Booked/Cancelled/Completed
     participants=db.Column(db.Integer,default=1)
     total_amount=db.Column(db.Float,default=0.0)
-    payment_status = db.Column(db.String(20), default='Pending')   #Pending /paid/Refunded
+    payment_status = db.Column(db.String(20), default='pending')   #pending /paid/Refunded
 
 
 

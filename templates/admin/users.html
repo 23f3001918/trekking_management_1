@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="dashboard-container">
+
+
+    <aside class="sidebar">
+        <h2 class="logo">🏔 Trek Admin</h2>
+        <ul>
+            <li><a href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
+            <li><a href="{{ url_for('view_treks') }}">Treks</a></li>
+            <li><a href="{{ url_for('view_staff') }}">Staff</a></li>
+            <li class="active">
+                <a href="{{ url_for('view_users') }}">Users</a>
+            </li>
+
+            <li><a href="{{ url_for('view_bookings') }}">Bookings</a></li>
+            <li><a href="{{ url_for('search') }}">Search</a></li>
+            <li><a href="{{ url_for('trekking_history') }}">History</a></li>
+            <li><a href="{{ url_for('logout') }}">Logout</a></li>
+        </ul>
+    </aside>
+
+
+    <div class="main-content">
+        <header class="topbar">
+            <h2>Trekking Management Application</h2>
+            <div class="admin-info">
+                 Admin
+            </div>
+        </header>
+
+        <div class="content">
+            <div class="table-box">
+                <div class="table-header">
+                    <h2>Registered Users</h2>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% if users %}
+                            {% for user in users %}
+                            <tr>
+                                <td>{{ user.id }}</td>
+                                <td>{{ user.name }}</td>
+                                <td>{{ user.email }}</td>
+                                <td>{{ user.phone }}</td>
+
+                                <td>
+                                    {% if user.status=="active" %}
+                                        <span class="status-open">
+                                            Active
+                                        </span>
+                                    {% else %}
+                                        <span class="status-closed">
+                                            Blacklisted
+                                        </span>
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    {% if user.status=="active" %}
+                                        <a href="{{ url_for('blacklist_user', user_id=user.id) }}"
+                                           class="delete-btn">
+                                            Blacklist
+                                        </a>
+
+                                    {% else %}
+                                        <a href="{{ url_for('activate_user', user_id=user.id) }}"class="edit-btn"> Activate</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+
+                        {% else %}
+                            <tr>
+                                <td colspan="6" style="text-align:center;padding:20px;">
+                                    No registered users found.
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
