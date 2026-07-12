@@ -3,14 +3,14 @@
 <div class="dashboard-container">
 
     <aside class="sidebar">
-        <h2 class="logo">🏔 Trek Admin</h2>
+        <h2 class="logo"> Trek Admin</h2>
         <ul>
             <li>
                 <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
             </li>
 
             <li class="active">
-                <a href="{{ url_for('view_treks') }}">Treks</a>
+                <a href="{{ url_for('admin_view_treks') }}">Treks</a>
             </li>
 
             <li>
@@ -133,7 +133,7 @@
                     </div>
 
                     <div class="button-group">
-                        <a href="{{ url_for('view_treks') }}"class="cancel-btn">Cancel</a>
+                        <a href="{{ url_for('admin_view_treks') }}"class="cancel-btn">Cancel</a>
                         <button
                             type="submit"
                             class="save-btn">

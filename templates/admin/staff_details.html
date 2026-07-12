@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <h2 class="logo">Trek Admin</h2>
+        <ul>
+            <li><a href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
+            <li><a href="{{ url_for('admin_view_treks') }}">Treks</a></li>
+            <li class="active">
+                <a href="{{ url_for('view_staff') }}">Staff</a>
+            </li>
+            <li><a href="{{ url_for('view_users') }}">Users</a></li>
+            <li><a href="{{ url_for('view_bookings') }}">Bookings</a></li>
+            <li><a href="{{ url_for('search') }}">Search</a></li>
+            <li><a href="{{ url_for('trekking_history') }}">History</a></li>
+            <li><a href="{{ url_for('logout') }}">Logout</a></li>
+        </ul>
+    </aside>
+
+    <div class="main-content">
+        <header class="topbar">
+            <h2>Trekking Management Application</h2>
+            <div class="admin-info">
+                Admin
+            </div>
+        </header>
+
+        <div class="content">
+            <div class="form-card">
+                <h2>Staff Details</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text"
+                               value="{{ staff.name }}"
+                               readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="text"
+                               value="{{ staff.email }}"
+                               readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Phone</label>
+                        <input type="text"
+                               value="{{ staff.phone }}"
+                               readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Experience</label>
+                        <input type="text"
+                               value="{{ profile.experience_years }} Years"
+                               readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Approval Status</label>
+                        <input type="text"
+                               value="{{ profile.approval_status }}"
+                               readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Account Status</label>
+                        <input type="text"
+                               value="{{ staff.status }}"
+                               readonly>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>Bio</label>
+                        <textarea rows="6"
+                                  readonly>
+                        {% if profile.bio %}
+                            {{ profile.bio }}
+                        {% else %}
+                            No bio added yet.
+                        {% endif %}
+                        </textarea>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <a href="{{ url_for('view_staff') }}"
+                       class="cancel-btn">
+                        Back
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

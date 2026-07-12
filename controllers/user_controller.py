@@ -1,6 +1,7 @@
 from flask import render_template, session, redirect, url_for, flash, request
 from models.models import db, User, Trek, Booking
 from utils.decorators import login_required, role_required
+from datetime import datetime
 
 def register_user_routes(app):
 
@@ -22,7 +23,7 @@ def register_user_routes(app):
     @app.route('/user/treks')
     @login_required
     @role_required('user')
-    def view_treks():
+    def user_view_treks():
         difficulty=request.args.get('difficulty')
         location=request.args.get('location')
         query=Trek.query.filter_by(status='Open')
@@ -43,12 +44,15 @@ def register_user_routes(app):
     def book_trek(trek_id):
         user_id=session['user_id']
         trek=Trek.query.get_or_404(trek_id)
+
         if trek.status!='Open':
-            flash('Trek is not open for booking')
-            return redirect(url_for('view_treks'))
+            flash('Trek is not open for booking', 'error')
+            return redirect(url_for('user_view_treks'))
+        
         if trek.available_slots <= 0:
-            flash('No slots available')
-            return redirect(url_for('view_treks'))
+            flash('No slots available', 'error')
+            return redirect(url_for('user_view_treks'))
+        
         existing_booking = Booking.query.filter(
             Booking.user_id == user_id,
             Booking.trek_id == trek_id,
@@ -56,8 +60,24 @@ def register_user_routes(app):
             ).first()
         
         if existing_booking:
-            flash('You have already booked this trek')
-            return redirect(url_for('view_treks'))
+            flash('You have already booked this trek', 'error')
+            return redirect(url_for('user_view_treks'))
+        cancelled_booking = Booking.query.filter_by(
+            user_id=user_id,
+            trek_id=trek_id,
+            status='Cancelled'
+        ).first()
+
+        if cancelled_booking:
+            cancelled_booking.status = 'Booked'
+            cancelled_booking.booking_date = datetime.utcnow()
+            cancelled_booking.total_amount = trek.price
+            cancelled_booking.payment_status = 'pending'
+            trek.available_slots -= 1
+            db.session.commit()
+            flash('Trek re-booked successfully', 'success')
+            return redirect(url_for('user_bookings'))
+        
         booking=Booking(user_id=user_id,
                           trek_id=trek_id,
                           total_amount=trek.price,
@@ -66,7 +86,7 @@ def register_user_routes(app):
         trek.available_slots-=1
         db.session.add(booking)
         db.session.commit()
-        flash('Trek booked successfully')
+        flash('Trek booked successfully', 'success')
         return redirect(url_for('user_bookings'))
     
      #=========================== My Bookings ========================================
@@ -88,15 +108,15 @@ def register_user_routes(app):
     def cancel_booking(booking_id):
         booking = Booking.query.get_or_404(booking_id)
         if booking.user_id != session['user_id']:
-            flash('Unauthorized access')
+            flash('Unauthorized access', 'warning')
             return redirect(url_for('user_bookings'))
         if booking.status != 'Booked':
-            flash('Only booked treks can be cancelled')
+            flash('Only booked treks can be cancelled', 'warning')
             return redirect(url_for('user_bookings'))
         booking.status = 'Cancelled'
         booking.trek.available_slots += 1
         db.session.commit()
-        flash('Booking cancelled successfully')
+        flash('Booking cancelled successfully', 'success')
         return redirect(url_for('user_bookings'))
     
     
@@ -132,11 +152,11 @@ def register_user_routes(app):
         name = request.form.get('name')
         phone = request.form.get('phone')
         if not name or not phone:
-            flash('All fields are required')
+            flash('All fields are required', 'warning')
             return redirect(url_for('user_profile'))
         user.name = name
         user.phone = phone
         db.session.commit()
-        flash('Profile updated successfully')
+        flash('Profile updated successfully', 'success')
         return redirect(url_for('user_profile'))
     

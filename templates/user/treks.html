@@ -1,64 +1,124 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="dashboard-container">
-    <div class="sidebar">
-        <a href="{{ url_for('user_dashboard') }}">Dashboard</a>
-        <a href="{{ url_for('view_treks') }}" class="active">Browse Treks</a>
-        <a href="{{ url_for('user_bookings') }}">My Bookings</a>
-        <a href="{{ url_for('trek_history') }}">History</a>
-        <a href="{{ url_for('user_profile') }}">Profile</a>
-        <a href="{{ url_for('logout') }}">Logout</a>
-    </div>
+    <aside class="sidebar">
+        <h2 class="logo">Trekker</h2>
 
-    <div class="content">
-        <div class="topbar">
-            <h3>Trekking Management Application</h3>
-            <div>
-                {{ session['user_name'] }}
+        <ul>
+            <li>
+                <a href="{{ url_for('user_dashboard') }}">Dashboard</a>
+            </li>
+
+            <li class="active">
+                <a href="{{ url_for('user_view_treks') }}">Browse Treks</a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('user_bookings') }}">My Bookings</a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('trek_history') }}">History</a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('user_profile') }}">Profile</a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            </li>
+        </ul>
+    </aside>
+
+    <div class="main-content">
+        <header class="topbar">
+            <h2>Trekking Management Application</h2>
+            <div class="admin-info">
+                {{ session['name'] }}
+            </div>
+        </header>
+
+        <div class="content">
+            <h1>Browse Treks</h1>
+            <p class="subtitle">
+                Search and explore available trekking adventures.
+            </p>
+
+            <div class="table-box">
+                <form method="GET" class="filter-form">
+                    <select name="difficulty">
+                        <option value="">All Difficulties</option>
+                        <option value="Easy">Easy</option>
+                        <option value="Moderate">Moderate</option>
+                        <option value="Hard">Hard</option>
+                    </select>
+                    <input
+                        type="text"
+                        name="location"
+                        placeholder="Search by Location">
+                    <button
+                        type="submit"
+                        class="save-btn">
+                        Search
+                    </button>
+                </form>
+            </div>
+
+            <div class="table-box">
+                <div class="table-header">
+                    <h2>Available Treks</h2>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Trek Name</th>
+                            <th>Location</th>
+                            <th>Difficulty</th>
+                            <th>Duration</th>
+                            <th>Available Slots</th>
+                            <th>Price</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                    {% if treks %}
+                        {% for trek in treks %}
+                        <tr>
+                            <td>{{ trek.name }}</td>
+                            <td>{{ trek.location }}</td>
+                            <td>{{ trek.difficulty }}</td>
+                            <td>{{ trek.duration_days }} Days</td>
+                            <td>{{ trek.available_slots }} Slots</td>
+                            <td>₹ {{ trek.price }}</td>
+                            <td>
+                                {% if trek.available_slots > 0 %}
+                                    <a href="{{ url_for('book_trek', trek_id=trek.id) }}"
+                                       class="edit-btn">
+                                        Book Now
+                                    </a>
+
+                                {% else %}
+                                    <span class="status-closed">
+                                        Full
+                                    </span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="7"
+                                style="text-align:center;padding:20px;">
+                                No treks found.
+                            </td>
+                        </tr>
+                    {% endif %}
+                    </tbody>
+                </table>
             </div>
         </div>
-        <h2>Browse Treks</h2>
-
-        <form method="GET" class="filter-form">
-            <select name="difficulty">
-                <option value="">All Difficulties</option>
-                <option value="Easy">Easy</option>
-                <option value="Moderate">Moderate</option>
-                <option value="Hard">Hard</option>
-            </select>
-
-            <input type="text"name="location"placeholder="Search Location">
-            <button type="submit">Search</button>
-        </form>
-        <br>
-
-        <table>
-            <tr>
-                <th>Trek Name</th>
-                <th>Location</th>
-                <th>Difficulty</th>
-                <th>Duration</th>
-                <th>Available Slots</th>
-                <th>Price</th>
-                <th>Action</th>
-            </tr>
-            {% for trek in treks %}
-
-            <tr>
-                <td>{{ trek.name }}</td>
-                <td>{{ trek.location }}</td>
-                <td>{{ trek.difficulty }}</td>
-                <td>{{ trek.duration_days }} Days</td>
-                <td>{{ trek.available_slots }}</td>
-                <td>₹ {{ trek.price }}</td>
-                <td>
-                    <a class="btn"href="{{ url_for('book_trek',trek_id=trek.id) }}">
-                        Book Now
-                    </a>
-                </td>
-            </tr>
-            {% endfor %}
-        </table>
     </div>
 </div>
 {% endblock %}

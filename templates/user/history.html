@@ -1,54 +1,110 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="dashboard-container">
-    <div class="sidebar">
-        <a href="{{ url_for('user_dashboard') }}">Dashboard</a>
-        <a href="{{ url_for('view_treks') }}">Browse Treks</a>
-        <a href="{{ url_for('user_bookings') }}">My Bookings</a>
-        <a href="{{ url_for('trek_history') }}" class="active">History</a>
-        <a href="{{ url_for('user_profile') }}"> Profile </a>
-        <a href="{{ url_for('logout') }}">Logout</a>
-    </div>
+    <aside class="sidebar">
+        <h2 class="logo">Trekker</h2>
+        <ul>
+            <li>
+                <a href="{{ url_for('user_dashboard') }}">Dashboard</a>
+            </li>
 
-    <div class="content">
-        <div class="topbar">
-            <h3>Trekking Management Application</h3>
-            <div>
-                {{ session['user_name'] }}
+            <li>
+                <a href="{{ url_for('user_view_treks') }}">Browse Treks</a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('user_bookings') }}">My Bookings</a>
+            </li>
+
+            <li class="active">
+                <a href="{{ url_for('trek_history') }}">History</a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('user_profile') }}">Profile</a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            </li>
+        </ul>
+    </aside>
+
+    <div class="main-content">
+        <header class="topbar">
+            <h2>Trekking Management Application</h2>
+            <div class="admin-info">
+                {{ session['name'] }}
+            </div>
+        </header>
+
+        <div class="content">
+            <h1>Trekking History</h1>
+            <p class="subtitle">
+                View your completed trekking journeys.
+            </p>
+
+            <div class="table-box">
+                <div class="table-header">
+                    <h2>Completed Treks</h2>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Trek Name</th>
+                            <th>Trek Dates</th>
+                            <th>Completed On</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                    {% if history %}
+                        {% for booking in history %}
+                        <tr>
+                            <td>{{ booking.trek.name }}</td>
+                            <td>
+                                {{ booking.trek.start_date.strftime('%d %b %Y') }}
+                                -
+                                {{ booking.trek.end_date.strftime('%d %b %Y') }}
+                            </td>
+                            <td>
+                                {{ booking.trek.end_date.strftime('%d %b %Y') }}
+                            </td>
+                            <td>
+                                {% if booking.status == "Completed" %}
+                                    <span class="status-completed">
+                                        Completed
+                                    </span>
+
+                                {% elif booking.status == "Cancelled" %}
+
+                                  <span class="status-closed">
+                                        Cancelled
+                                    </span>
+
+                                {% else %}
+                                    <span class="status-pending">
+                                        {{ booking.status }}
+                                    </span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+
+                    {% else %}
+                        <tr>
+                            <td colspan="4"
+                                style="text-align:center;padding:20px;">
+                                No trekking history available.
+                            </td>
+                        </tr>
+                    {% endif %}
+                    </tbody>
+                </table>
             </div>
         </div>
-
-        <h2>Trekking History</h2>
-        <table>
-            <tr>
-                <th>Trek Name</th>
-                <th>Trek Dates</th>
-                <th>Completed On</th>
-                <th>Status</th>
-            </tr>
-            {% for booking in history %}
-
-            <tr>
-                <td>
-                    {{ booking.trek.name }}
-                </td>
-
-                <td>
-                    {{ booking.trek.start_date.strftime('%d %b %Y') }}
-                    -
-                    {{ booking.trek.end_date.strftime('%d %b %Y') }}
-                </td>
-
-                <td>
-                    {{ booking.trek.end_date.strftime('%d %b %Y') }}
-                </td>
-
-                <td>
-                    {{ booking.status }}
-                </td>
-            </tr>
-            {% endfor %}
-        </table>
     </div>
 </div>
 {% endblock %}

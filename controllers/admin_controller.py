@@ -1,6 +1,7 @@
 from flask import app, Flask, render_template,request,redirect,url_for,flash
 from models.models import db,User,Trek,Booking,StaffProfile
 from utils.decorators import login_required,role_required
+from datetime import datetime
 
 def register_admin_routes(app):
     #=======================================Dashboard ===========================================
@@ -25,7 +26,7 @@ def register_admin_routes(app):
     @app.route('/admin/treks')
     @login_required
     @role_required('admin')
-    def view_treks():
+    def admin_view_treks():
         treks=Trek.query.all()
         return render_template('admin/treks.html',
                                treks=treks
@@ -41,18 +42,18 @@ def register_admin_routes(app):
                 name=request.form['name'],
                 location=request.form['location'],
                 difficulty=request.form['difficulty'],
-                duration_days=request.form['duration_days'],
-                total_slots=request.form['total_slots'],
-                available_slots=request.form['total_slots'],
-                start_date=request.form['start_date'],
-                end_date=request.form['end_date'],
+                duration_days=int(request.form['duration_days']),
+                total_slots=int(request.form['total_slots']),
+                available_slots=int(request.form['total_slots']),
+                start_date = datetime.strptime( request.form['start_date'], "%Y-%m-%d").date(),
+                end_date = datetime.strptime(request.form['end_date'], "%Y-%m-%d").date(),
                 description=request.form['description'],
-                price=request.form['price']
+                price=float(request.form['price'])
                 )
             db.session.add(trek)
             db.session.commit()
-            flash('Trek added successfully')
-            return redirect(url_for('view_treks'))
+            flash('Trek added successfully','success')
+            return redirect(url_for('admin_view_treks'))
         return render_template('admin/add_trek.html')
 
 
@@ -62,24 +63,24 @@ def register_admin_routes(app):
     @role_required('admin')
     def edit_trek(trek_id):
         trek=Trek.query.get_or_404(trek_id)
-        if request.method=='POST':
-            trek.name=request.form['name']
-            trek.location=request.form['location']
-            trek.difficulty=request.form['difficulty']
-            trek.duration_days=request.form['duration_days']
-            trek.total_slots=request.form['total_slots']
-            trek.available_slots=request.form['available_slots']
-            trek.start_date=request.form['start_date']
-            trek.end_date=request.form['end_date']
-            trek.description=request.form['description']
-            trek.price=request.form['price']
+        if request.method == 'POST':
+            trek.name = request.form['name']
+            trek.location = request.form['location']
+            trek.difficulty = request.form['difficulty']
+            trek.duration_days = int(request.form['duration_days'])
+            trek.total_slots = int(request.form['total_slots'])
+            trek.available_slots = int(request.form['available_slots'])
+            trek.start_date = datetime.strptime(request.form['start_date'], "%Y-%m-%d").date()
+            trek.end_date = datetime.strptime(request.form['end_date'], "%Y-%m-%d").date()
+            trek.description = request.form['description']
+            trek.price = float(request.form['price'])
             db.session.commit()
-            flash('Trek updated successfully')
-            return redirect(url_for('view_treks'))
-        return render_template('admin/edit_trek.html',
-                               trek=trek
-                               )
-    
+
+            flash('Trek updated successfully', 'success')
+            return redirect(url_for('admin_view_treks'))
+        return render_template('admin/edit_trek.html',trek=trek)
+        
+
     #==========================================Delete Trek===================================================
     @app.route('/admin/trek/delete/<int:trek_id>')
     @login_required
@@ -88,8 +89,8 @@ def register_admin_routes(app):
         trek = Trek.query.get_or_404(trek_id)
         db.session.delete(trek)
         db.session.commit()
-        flash('Trek deleted successfully')
-        return redirect(url_for('view_treks'))
+        flash('Trek deleted successfully','success')
+        return redirect(url_for('admin_view_treks'))
     
     #==========================================View All Users===================================================
     @app.route('/admin/users')
@@ -120,7 +121,24 @@ def register_admin_routes(app):
                                approved_staff=approved_staff,
                                pending_staff=pending_staff
                                )
+       
     
+    #========================================View Staff Details===================================================
+    @app.route('/admin/staff/<int:staff_id>')
+    @login_required
+    @role_required('admin')
+    def view_staff_details(staff_id):
+        staff = User.query.get_or_404(staff_id)
+        if staff.role != 'staff':
+            flash("Invalid staff member.",'error')
+            return redirect(url_for('view_staff'))
+        profile = StaffProfile.query.filter_by(user_id=staff.id).first()
+        return render_template('admin/staff_details.html',
+                               staff=staff,
+                               profile=profile
+                               )
+        
+        
     #========================================Delete Staff===================================================
     @app.route('/admin/staff/delete/<int:staff_id>')
     @login_required
@@ -128,14 +146,14 @@ def register_admin_routes(app):
     def delete_staff(staff_id):
         staff = User.query.get_or_404(staff_id)
         if staff.role!='staff':
-            flash('Invalid staff member')
+            flash('Invalid staff member','error')
             return redirect(url_for('view_staff'))
         profile = StaffProfile.query.filter_by(user_id=staff.id).first()
         if profile:
             db.session.delete(profile)
         db.session.delete(staff)
         db.session.commit()
-        flash('Staff removed successfully')
+        flash('Staff removed successfully','success')
         return redirect(url_for('view_staff'))
     
     #======================================== Approve Staff ===========================================
@@ -150,7 +168,7 @@ def register_admin_routes(app):
         profile.approval_status ='approved'
         profile.user.status ='active'
         db.session.commit()
-        flash('Staff approved successfully.')
+        flash('Staff approved successfully.','success')
         return redirect(url_for('view_staff'))
         
     #========================================Trekking History===================================================
@@ -173,8 +191,8 @@ def register_admin_routes(app):
         if request.method=='POST':
             trek.assigned_staff_id=request.form['staff_id']
             db.session.commit()
-            flash('Staff assigned successfully')
-            return redirect(url_for('view_treks'))
+            flash('Staff assigned successfully','success')
+            return redirect(url_for('admin_view_treks'))
         return render_template('admin/assign_staff.html',
                                trek=trek,
                                staffs=staffs
@@ -188,7 +206,7 @@ def register_admin_routes(app):
         user=User.query.get_or_404(user_id)
         user.status='blacklisted'
         db.session.commit()
-        flash('User blacklisted')
+        flash('User blacklisted','warning')
         return redirect(request.referrer)
     
     #========================================Activate User================================================================
@@ -199,7 +217,7 @@ def register_admin_routes(app):
         user = User.query.get_or_404(user_id)
         user.status = 'active'
         db.session.commit()
-        flash('User activated')
+        flash('User activated','success')
         return redirect(request.referrer)
     
     #=======================================View All Bookings====================================================================
@@ -222,14 +240,17 @@ def register_admin_routes(app):
             Trek.name.ilike(f'%{keyword}%'),
             Trek.id.cast(db.String).ilike(f'%{keyword}%'))
             ).all()
-        users = User.query.filter(db.or_(
+        
+        users = User.query.filter(User.role == 'user',db.or_(
             User.name.ilike(f'%{keyword}%'),
             User.id.cast(db.String).ilike(f'%{keyword}%'))
             ).all()
+        
         staffs = User.query.filter(User.role == 'staff',db.or_(
             User.name.ilike(f'%{keyword}%'),
             User.id.cast(db.String).ilike(f'%{keyword}%'))
             ).all()
+        
         return render_template('admin/search_results.html',
                             treks=treks,
                             users=users,

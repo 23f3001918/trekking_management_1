@@ -46,7 +46,7 @@ def register_staff_routes(app):
     def trek_details(trek_id):
         trek = Trek.query.get_or_404(trek_id)
         if trek.assigned_staff_id != session['user_id']:
-            flash('You are not authorized to manage this trek')
+            flash('You are not authorized to manage this trek', 'warning')
             return redirect(url_for('assigned_treks'))
         participant_count = Booking.query.filter_by(trek_id=trek.id).count()
         return render_template('staff/trek_details.html',
@@ -61,12 +61,12 @@ def register_staff_routes(app):
     def update_slots(trek_id):
         trek = Trek.query.get_or_404(trek_id)
         if trek.assigned_staff_id != session['user_id']:
-            flash('Unauthorized Access')
+            flash('Unauthorized Access', 'warning')
             return redirect(url_for('assigned_treks'))
         if request.method == 'POST':
             trek.available_slots = int(request.form['available_slots'])
             db.session.commit()
-            flash('Available slots updated successfully')
+            flash('Available slots updated successfully', 'success')
             return redirect(url_for('trek_details',
                                     trek_id=trek.id)
                                     )
@@ -81,7 +81,7 @@ def register_staff_routes(app):
     def update_trek_status(trek_id):
         trek=Trek.query.get_or_404(trek_id)
         if trek.assigned_staff_id != session['user_id']:
-            flash('Unauthorized Access')
+            flash('Unauthorized Access', 'warning')
             return redirect(url_for('assigned_treks'))
         if request.method == 'POST':
             trek.status = request.form['status']
@@ -89,7 +89,7 @@ def register_staff_routes(app):
                 for booking in trek.bookings:
                     booking.status = 'Completed'
             db.session.commit()
-            flash('Trek status updated successfully')
+            flash('Trek status updated successfully', 'success')
             return redirect(url_for('trek_details',
                                     trek_id=trek.id)
                                     )
@@ -104,7 +104,7 @@ def register_staff_routes(app):
     def view_participants(trek_id):
         trek = Trek.query.get_or_404(trek_id)
         if trek.assigned_staff_id != session['user_id']:
-            flash('Unauthorized Access')
+            flash('Unauthorized Access', 'warning')
             return redirect(url_for('assigned_treks'))
         bookings = Booking.query.filter_by(
             trek_id=trek.id
@@ -126,7 +126,7 @@ def register_staff_routes(app):
                 request.form['experience_years']
             )
             db.session.commit()
-            flash('Profile updated successfully')
+            flash('Profile updated successfully', 'success')
             return redirect(url_for('staff_profile'))
         return render_template('staff/profile.html',
                                profile=profile

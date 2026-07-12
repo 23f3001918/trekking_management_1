@@ -31,7 +31,7 @@ with app.app_context():
 
 @app.route('/')
 def home():
-    return render_template('login.html')
+    return redirect(url_for('login'))
 
 if __name__=='__main__':
     app.run(debug=True)

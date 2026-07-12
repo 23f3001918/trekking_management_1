@@ -1,5 +1,5 @@
 from flask import render_template,request,redirect,url_for,flash,session
-from models.models import StaffProfile, db,User,profile
+from models.models import StaffProfile, db,User
 
 def register_routes(app):
     #=================================User Registration==============================================
@@ -9,7 +9,7 @@ def register_routes(app):
             email=request.form['email']
             existing_user=User.query.filter_by(email=email).first()
             if existing_user:
-                flash('Email already registered.')
+                flash('Email already registered.','error')
                 return redirect(url_for('register'))
             
             user=User(
@@ -21,7 +21,7 @@ def register_routes(app):
             )
             db.session.add(user)
             db.session.commit()
-            flash('Registration Successful! please login.')
+            flash('Registration Successful! please login.', 'success')
             return redirect(url_for('login'))
         return render_template('register.html')
     
@@ -33,7 +33,7 @@ def register_routes(app):
             email = request.form['email']
             existing_user = User.query.filter_by(email=email).first()
             if existing_user:
-                flash('Email already registered.')
+                flash('Email already registered.', 'error')
                 return redirect(url_for('staff_register'))
             staff = User(
                 name=request.form['name'],
@@ -47,12 +47,12 @@ def register_routes(app):
             profile = StaffProfile(
             user_id=staff.id,
             bio='',
-            experience_years=0,
+            experience_years=int(request.form['experience_years']),
             approval_status='pending'
         )
             db.session.add(profile)
             db.session.commit()
-            flash('Registration successful. Wait for Admin approval.')
+            flash('Registration successful. Wait for Admin approval.', 'success')
             return redirect(url_for('login'))
         return render_template('staff_register.html')
     
@@ -66,7 +66,7 @@ def register_routes(app):
             user=User.query.filter_by(email=email,password=password).first()
             if user:
                 if user.status=='blacklisted':
-                    flash('Your account is blacklisted.')
+                    flash('Your account is blacklisted.', 'warning')
                     return redirect (url_for('login'))
                 session['user_id']=user.id
                 session['user_role']=user.role
@@ -78,7 +78,7 @@ def register_routes(app):
                 elif user.role == 'staff':
                     profile = StaffProfile.query.filter_by(user_id=user.id).first()
                     if not profile or profile.approval_status != 'approved':
-                        flash('Your staff account is waiting for Admin approval.')
+                        flash('Your staff account is waiting for Admin approval.', 'error')
                         session.clear()
                         return redirect(url_for('login'))
                     return redirect(url_for('staff_dashboard'))   
@@ -86,7 +86,7 @@ def register_routes(app):
                 elif user.role=='user':
                     return redirect(url_for('user_dashboard'))
                     
-            flash ('Invalid Credentials')
+            flash ('Invalid Credentials', 'error')
             return redirect(url_for('login'))
         return render_template('login.html')
 
@@ -95,7 +95,7 @@ def register_routes(app):
     @app.route('/logout')
     def logout():
         session.clear()
-        flash('Logged Out Successfully.') 
+        flash('Logged Out Successfully.', 'success')
         return redirect(url_for('login'))       
                     
 
