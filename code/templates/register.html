@@ -29,11 +29,6 @@
                    placeholder="Password"
                    required>
 
-            <input type="password"
-                   name="confirm_password"
-                   placeholder="Confirm Password"
-                   required>
-
             <div class="role-row">
 
                 <label>I am a</label>
@@ -42,7 +37,6 @@
                     <option value="">-- Select Role --</option>
                     <option value="user">User (Trekker)</option>
                 </select>
-
             </div>
 
             <button type="submit">
@@ -53,7 +47,7 @@
 
         <p>
             Already have an account?
-            <a href="{{ url_for('login') }}">
+            <a href="{{ url_for('login') }}"class="login-link">
                 Login here
             </a>
         </p>

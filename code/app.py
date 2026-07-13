@@ -1,9 +1,9 @@
 from flask import Flask,render_template,request,url_for,redirect
 from models.models import db,User,Trek,Booking,StaffProfile
-from controllers.auth_controller import register_routes
-from controllers.admin_controller import register_admin_routes
-from controllers.staff_controller import register_staff_routes
-from controllers.user_controller import register_user_routes
+from trekking_management_1.code.controllers.auth_controller import register_routes
+from trekking_management_1.code.controllers.admin_controller import register_admin_routes
+from trekking_management_1.code.controllers.staff_controller import register_staff_routes
+from trekking_management_1.code.controllers.user_controller import register_user_routes
 
 app= Flask(__name__)
 app.config['SECRET_KEY']='trek-secret-key'

@@ -2,7 +2,7 @@
 {% block content %}
 <div class="dashboard-container">
     <aside class="sidebar">
-        <h2 class="logo">🏔 Trek Staff</h2>
+        <h2 class="logo"> Trek Staff</h2>
         <ul>
             <li>
                 <a href="{{ url_for('staff_dashboard') }}">Dashboard</a>
@@ -39,8 +39,9 @@
                 <div class="table-header">
                     <div>
                         <h2>{{ trek.name }} - Participants</h2>
+                        <br>
                         <p>
-                            {{ bookings|length }} Registered Participant(s)
+                            {{ bookings|length }} Registered Participant
                         </p>
                     </div>
                     <a href="{{ url_for('trek_details', trek_id=trek.id) }}"
@@ -52,7 +53,7 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>Booking ID</th>
+                            <th>Serial No.</th>
                             <th>Participant Name</th>
                             <th>Email</th>
                             <th>Phone</th>
@@ -65,11 +66,11 @@
                     {% if bookings %}
                         {% for booking in bookings %}
                         <tr>
-                            <td>{{ booking.id }}</td>
+                            <td>{{ loop.index }}</td>
                             <td>{{ booking.user.name }}</td>
                             <td>{{ booking.user.email }}</td>
                             <td>{{ booking.user.phone }}</td>
-                            <td>{{ booking.booking_date }}</td>
+                            <td>{{ booking.booking_date.strftime('%d-%m-%Y') }}</td>
                             <td>
                                 {% if booking.status == "Booked" %}
                                     <span class="status-open">

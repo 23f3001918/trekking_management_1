@@ -30,6 +30,22 @@ body{
     font-size: 18px;
 }
 
+.login-link{
+    color: #2e7d32;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.login-link:hover{
+    color: #1b5e20;
+    text-decoration: underline;
+}
+
+.login-link:visited{
+    color: #2e7d32;
+}
+
+
 .auth-header{
     background:#fff;
     padding:20px;
